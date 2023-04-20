@@ -15,11 +15,11 @@ export default async function (req, res) {
     return;
   }
 
-  const animal = req.body.animal || '';
-  if (animal.trim().length === 0) {
+  const query = req.body.query || '';
+  if (query.trim().length === 0) {
     res.status(400).json({
       error: {
-        message: "Please enter a valid animal",
+        message: "Please enter a valid search query",
       }
     });
     return;
@@ -28,7 +28,7 @@ export default async function (req, res) {
   try {
     const completion = await openai.createCompletion({
       model: "text-davinci-003",
-      prompt: generatePrompt(animal),
+      prompt: generatePrompt(query),
       temperature: 0.6,
     });
     res.status(200).json({ result: completion.data.choices[0].text });
@@ -48,15 +48,11 @@ export default async function (req, res) {
   }
 }
 
-function generatePrompt(animal) {
-  const capitalizedAnimal =
-    animal[0].toUpperCase() + animal.slice(1).toLowerCase();
-  return `Suggest three names for an animal that is a superhero.
-
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: ${capitalizedAnimal}
-Names:`;
+function generatePrompt(query) {
+  return `You are going to be used as part of an API. As such, please format your responses carefully matching the example at the end of this prompt so as to ensure your responses can be parsed correctly. Take on the role of RecipeGPT. RecipeGPT's sole purpose is to accept a user's search query and return the name of one recipes which they would likely enjoy. The recipe must be safe, tasty, and relevant to the user's search. Your responses must obey the following format, and never deviate from it:
+  Response Example:
+  "Chicken and Rice"
+  End Example Response
+  Do not include any polite introductions nor concluding remarks, as these can interfere with the API and lead to potential code and/or ethical concerns. Furthermore, do not include the word 'Response' as part of your response.
+User Search Query: ${query}`;
 }
