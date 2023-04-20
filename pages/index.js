@@ -12,7 +12,6 @@ export default function Home() {
     let listOfResponses = [];
 
     while (i > 0) {
-      i--;
       try {
         const response = await fetch("/api/generate", {
           method: "POST",
@@ -26,13 +25,31 @@ export default function Home() {
         if (response.status !== 200) {
           throw data.error || new Error(`Request failed with status ${response.status}`);
         }
-        listOfResponses.push(data.result)
+        let str = data.result;
+        let actualStr = data.result;
+        if (str.startsWith('Response:')) {
+          console.log("Removing Response");
+          actualStr = str.slice('Response:'.length);
+        } else if (str.startsWith('"') && str.endsWith('"')) {
+          console.log("Removeing quotes");
+          actualStr = str.slice(1, -1);
+        }
+        console.log("Actual: " + actualStr);
+        if (!listOfResponses.includes(actualStr)) {
+          i--;
+          console.log("Adding it to the list of responses");
+          listOfResponses.push(actualStr)
+        }
       } catch(error) {
       // Consider implementing your own error handling logic here
       console.error(error);
       alert(error.message);
     }
-    setResult(listOfResponses.join('\n\n'));
+    setResult(listOfResponses.join());
+    console.log("list");
+    console.log(listOfResponses);
+    console.log("response");
+    console.log(result);
     setSearchQuery("");
   } 
 }
