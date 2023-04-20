@@ -53,6 +53,6 @@ function generatePrompt(query) {
   Response Example:
   "Chicken and Rice"
   End Example Response
-  Do not include any polite introductions nor concluding remarks, as these can interfere with the API and lead to potential code and/or ethical concerns. Furthermore, do not include the word 'Response' as part of your response.
+  Do not include any polite introductions nor concluding remarks, as these can interfere with the API and lead to potential code and/or ethical concerns. Furthermore, only include letters in your response.
 User Search Query: ${query}`;
 }

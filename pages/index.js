@@ -8,10 +8,14 @@ export default function Home() {
 
   async function onSubmit(event) {
     event.preventDefault();
+    setResult("");
     let i = 5;
     let listOfResponses = [];
+    let timeOut = 20;
 
-    while (i > 0) {
+    while (i > 0 && timeOut > 0) {
+      timeOut--;
+      
       try {
         const response = await fetch("/api/generate", {
           method: "POST",
@@ -26,33 +30,39 @@ export default function Home() {
           throw data.error || new Error(`Request failed with status ${response.status}`);
         }
         let str = data.result;
-        let actualStr = data.result;
+        str = str.trim();
+        let actualStr = str;
         if (str.startsWith('Response:')) {
           console.log("Removing Response");
           actualStr = str.slice('Response:'.length);
-        } else if (str.startsWith('"') && str.endsWith('"')) {
-          console.log("Removeing quotes");
+        } 
+        actualStr = actualStr.trim();
+        if (str.startsWith('"') && str.endsWith('"')) {
+          console.log("Removing quotes");
           actualStr = str.slice(1, -1);
         }
+        actualStr = actualStr.trim();
         console.log("Actual: " + actualStr);
         if (!listOfResponses.includes(actualStr)) {
           i--;
           console.log("Adding it to the list of responses");
           listOfResponses.push(actualStr)
+        } else {
+          console.log("AVOIDING DUPLICATE")
         }
       } catch(error) {
       // Consider implementing your own error handling logic here
       console.error(error);
       alert(error.message);
-    }
-    setResult(listOfResponses.join());
+      }
+    } 
+    setResult(listOfResponses.join(", "));
     console.log("list");
     console.log(listOfResponses);
     console.log("response");
     console.log(result);
     setSearchQuery("");
-  } 
-}
+  }
 
   return (
     <div>
